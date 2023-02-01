@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Żuzel</title>
+    <!-- https://pastebin.com/t72hFmf3 -->
+    <!-- https://pastebin.com/bwjMTaph -->
+    <style>
+        #main {
+            margin: auto;
+            text-align: center;
+        }
+
+        canvas {
+            border: solid 1px;
+        }
+
+        button {
+            width: 100px;
+            height: 50px;
+        }
+    </style>
+</head>
+
+<body onkeydown="klaw1(event)" onkeyup="klaw2(event)">
+    <script defer>
+        //assets
+        let kierunek = ""
+        let help = false
+        let players = []
+        let loading = 0
+
+        let img = new Image();
+        img.src = "grass_tx3.jpg";
+        img.onload = () => {
+            loading++
+            game.assets_check(loading)
+        }
+
+        let img2 = new Image();
+        img2.src = "dirt_tx4.jpg";
+        img2.onload = () => {
+            loading++
+            game.assets_check(loading)
+        }
+
+        //class Player
+        class Player {
+            constructor(name, key1, key2) {
+                this.name = name
+                this.key1 = key1
+                this.key2 = key2
+                this.angle = 90
+                this.speed = 10
+                this.x = game.wid / 2
+                this.y = game.hei / 2 + game.hei / 5 + (game.hei / 2 - game.hei / 5) / 5
+                console.log(this.y)
+                this.tab = [{
+                    x: this.x - 10,
+                    y: this.y
+                }, {
+                    x: this.x,
+                    y: this.y
+                }]
+
+                let cv = document.getElementById("canvas")
+                let ctx = cv.getContext("2d")
+                ctx.lineWidth = game.lwid
+                ctx.beginPath()
+                ctx.moveTo(this.x - 10, this.y)
+                ctx.lineTo(this.x, this.y)
+                ctx.closePath()
+                ctx.stroke()
+            }
+
+            movement(temp_key) {
+
+                if (temp_key == this.key1) {        //prawo
+                    this.angle -= 10
+                } else if (temp_key == this.key2) {     //lewo
+                    this.angle += 10
+                }
+
+                let cv = document.getElementById("canvas")
+                let ctx = cv.getContext("2d")
+                ctx.lineWidth = game.lwid
+                ctx.beginPath()
+                ctx.moveTo(this.tab[0].x, this.tab[0].y)
+                for (let i = 1; i < this.tab.length; i++) {
+                    ctx.lineTo(this.tab[i].x, this.tab[i].y)
+                }
+                this.x = this.x + (this.speed * Math.sin((2 * Math.PI / 360) * this.angle))
+                this.y = this.y + (this.speed * Math.cos((2 * Math.PI / 360) * this.angle))
+                ctx.lineTo(this.x, this.y)
+                ctx.stroke()
+
+                this.tab.push({
+                    x: this.x,
+                    y: this.y
+                })
+                if (this.tab.length > 9) {
+                    this.tab.shift()
+                }
+            }
+        }
+
+        //main object
+        let game = {
+            wid: 600,
+            hei: 300,
+            lwid: 4,
+            assets: 2,
+
+            assets_check: function (x) {
+                if (this.assets <= x) {
+                    game.main()
+                }
+            },
+
+            main: function () {
+                let main = document.createElement("div")
+                main.id = "main"
+                main.style.width = this.wid + "px"
+                document.body.append(main)
+
+                if (this.wid < this.hei) {
+                    this.hei = this.wid
+                }
+                this.generate_map()
+            },
+
+            generate_map: function () {
+                let cv = document.createElement("canvas")
+                cv.id = "canvas"
+                cv.width = this.wid
+                cv.height = this.hei
+
+                let bt_start = document.createElement("button")
+                bt_start.addEventListener("click", this.start)
+                bt_start.innerText = "start"
+
+
+                document.getElementById("main").append(cv, bt_start)
+                this.render()
+            },
+
+            render: function () {
+                let cv = document.getElementById("canvas")
+                let ctx = cv.getContext("2d")
+                let pat = ctx.createPattern(img, 'repeat')
+                let pat2 = ctx.createPattern(img2, 'repeat')
+
+                ctx.clearRect(0, 0, this.wid, this.hei)
+
+                ctx.lineWidth = this.lwid
+                ctx.fillStyle = pat;
+                ctx.beginPath()
+                ctx.moveTo(0, 0)
+                ctx.lineTo(this.wid, 0)
+                ctx.lineTo(this.wid, this.hei)
+                ctx.lineTo(0, this.hei)
+                ctx.closePath()
+                ctx.fill()
+
+                ctx.fillStyle = pat2;
+                ctx.beginPath()
+                ctx.arc(this.hei / 2, this.hei / 2, this.hei / 2 - this.lwid / 2, (2 * Math.PI) / 360 * 270, (2 * Math.PI) / 360 * 90, true);
+                ctx.arc(this.wid - (this.hei / 2), this.hei / 2, this.hei - (this.hei / 2) - this.lwid / 2, (2 * Math.PI) / 360 * 90, (2 * Math.PI) / 360 * 270, true);
+                ctx.closePath()
+                ctx.stroke()
+                ctx.fill()
+
+                ctx.fillStyle = pat;
+                ctx.beginPath()
+                ctx.arc(this.hei / 2, this.hei / 2, this.hei / 5, (2 * Math.PI) / 360 * 90, (2 * Math.PI) / 360 * 270);
+                ctx.arc(this.wid - (this.hei / 2), this.hei / 2, this.hei / 5, (2 * Math.PI) / 360 * 270, (2 * Math.PI) / 360 * 90);
+                ctx.closePath()
+                ctx.stroke()
+                ctx.fill()
+            },
+
+            start: function () {
+                let pl1 = new Player("ala", 39, 37)
+                setInterval(() => {
+                    game.render()
+                    pl1.movement(kierunek)
+                    console.log(kierunek)
+                    if (help) {
+                        help = false
+                        kierunek = ""
+                    }
+                }, 200);
+
+            },
+        }
+
+        //klawisze
+        function klaw1(e) {
+            help = false
+            kierunek = e.which
+        }
+
+        function klaw2(e) {
+            help = true
+        }
+
+    </script>
+</body>
+
+</html>
