@@ -91,7 +91,8 @@
 
         //class Player
         class Player {
-            constructor(name, key1, opis_key1, key2, opis_key2, numer) {
+            constructor(name, key1, opis_key1, key2, opis_key2, number) {
+                this.number = number
                 this.color = "rgb(" + Math.random() * 255 + ",0,0)"
                 this.name = name
                 this.key1 = key1
@@ -101,7 +102,7 @@
                 this.angle = 90
                 this.speed = 10
                 this.x = game.wid / 2
-                this.y = game.hei / 2 + game.hei / 5 + ((game.hei / 2 - game.hei / 5) / 5) * numer
+                this.y = game.hei / 2 + game.hei / 5 + ((game.hei / 2 - game.hei / 5) / 5) * this.number
                 this.tab = [{
                     x: this.x - 10,
                     y: this.y
@@ -126,12 +127,18 @@
                 ctx.stroke()
             }
 
-            movement(temp_key) {
+            game_init() {
+                this.menu_name_input.disabled = true
                 this.menu_bt1.disabled = true
                 this.menu_bt2.disabled = true
                 this.menu_del.disabled = true
                 this.menu_bt1.innerText = this.opis_key1
                 this.menu_bt2.innerText = this.opis_key2
+                this.name = this.menu_name_input.value
+                this.generate_player()
+            }
+
+            movement(temp_key) {
 
                 if (temp_key.includes(this.key2)) {        //prawo
                     this.angle -= 10
@@ -172,7 +179,7 @@
 
                 this.menu_main.className = "menu"
                 this.menu_name.innerText = "Nazwa gracza:"
-                this.menu_name_input.value = "Player" + (players.length + 1)
+                this.menu_name_input.value = "Player" + this.number
                 this.menu_bt1.innerText = this.opis_key1
                 this.menu_bt2.innerText = this.opis_key2
                 this.menu_del.innerText = "Usuń"
@@ -234,6 +241,7 @@
                 wybrane_kierunki.splice(wybrane_kierunki.indexOf(this.key1), 1)
                 wybrane_kierunki.splice(wybrane_kierunki.indexOf(this.key2), 1)
                 document.getElementById("main").removeChild(this.menu_main)
+                players_kol[this.number - 1] = 0
                 game.del(this)
             }
         }
@@ -323,18 +331,14 @@
             start: function () {
                 document.getElementById("bt_init_player").disabled = true
                 document.getElementById("bt_start").disabled = true
-                console.log(kierunki)
                 game.render()
                 players.forEach(pl => {
-                    pl.movement(kierunki)
-                    pl.menu_name_input.disabled = true
+                    pl.game_init(kierunki)
                 })
                 setInterval(() => {
-                    console.log(kierunki)
                     game.render()
                     players.forEach(pl => {
                         pl.movement(kierunki)
-                        pl.menu_name_input.disabled = true
                     })
                 }, 200);
 
@@ -342,30 +346,41 @@
 
             init_player: function () {
                 document.getElementById("bt_start").disabled = false
-                for (let i = 0; i < players_kol.length; i++) {
-                    if (players_kol[i] == 0) {
-
+                if (players.length < 4) {
+                    for (let i = 0; i < players_kol.length; i++) {
+                        if (players_kol[i] == 0) {
+                            if (!players_kol.includes(1)) {
+                                players.push(new Player("Player1", "KeyQ", "q", "KeyW", "w", i + 1))
+                                wybrane_kierunki.push("KeyQ", "KeyW")
+                                players_kol[i] = 1
+                                break
+                            } else if (!players_kol.includes(2)) {
+                                players.push(new Player("Player2", "KeyC", "c", "KeyV", "v", i + 1))
+                                wybrane_kierunki.push("KeyC", "KeyV")
+                                players_kol[i] = 2
+                                break
+                            } else if (!players_kol.includes(3)) {
+                                players.push(new Player("Player3", "KeyY", "y", "KeyU", "u", i + 1))
+                                wybrane_kierunki.push("KeyY", "KeyU")
+                                players_kol[i] = 3
+                                break
+                            } else if (!players_kol.includes(4)) {
+                                players.push(new Player("Player4", "KeyK", "k", "KeyL", "l", i + 1))
+                                wybrane_kierunki.push("KeyK", "KeyL")
+                                players_kol[i] = 4
+                                break
+                            }
+                        }
                     }
-
-                }
-                if (players.length == 0) {
-                    players.push(new Player("Player1", "KeyQ", "q", "KeyW", "w"))
-                    wybrane_kierunki.push("KeyQ", "KeyW")
-                } else if (players.length == 1) {
-                    players.push(new Player("Player2", "KeyC", "c", "KeyV", "v"))
-                    wybrane_kierunki.push("KeyC", "KeyV")
-                } else if (players.length == 2) {
-                    players.push(new Player("Player3", "KeyY", "y", "KeyU", "u"))
-                    wybrane_kierunki.push("KeyY", "KeyU")
-                } else if (players.length == 3) {
-                    players.push(new Player("Player4", "KeyK", "k", "KeyL", "l"))
-                    wybrane_kierunki.push("KeyK", "KeyL")
-                    document.getElementById("bt_init_player").innerText = "Limit graczy"
-                    document.getElementById("bt_init_player").disabled = true
                 } else {
                     document.getElementById("bt_init_player").innerText = "Limit graczy"
                     document.getElementById("bt_init_player").disabled = true
                 }
+                if (players.length == 4) {
+                    document.getElementById("bt_init_player").innerText = "Limit graczy"
+                    document.getElementById("bt_init_player").disabled = true
+                }
+
             },
 
             del: function (gracz) {
@@ -375,7 +390,6 @@
                 this.render()
                 players.forEach(pl => {
                     pl.generate_player()
-                    console.log("1")
                 })
             }
         }
