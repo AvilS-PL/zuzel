@@ -75,16 +75,41 @@
         let players_kol = [0, 0, 0, 0]
         let loading = 0
 
-        let img = new Image();
-        img.src = "grass_tx3.jpg";
+        let img = new Image()
+        img.src = "grass_tx3.jpg"
         img.onload = () => {
             loading++
             game.assets_check(loading)
         }
 
-        let img2 = new Image();
-        img2.src = "dirt_tx4.jpg";
+        let img2 = new Image()
+        img2.src = "dirt_tx4.jpg"
         img2.onload = () => {
+            loading++
+            game.assets_check(loading)
+        }
+
+        let img_p1 = new Image();
+        img_p1.src = "motorcycle_red.png"
+        img_p1.onload = () => {
+            loading++
+            game.assets_check(loading)
+        }
+        let img_p2 = new Image();
+        img_p2.src = "motorcycle_green.png"
+        img_p2.onload = () => {
+            loading++
+            game.assets_check(loading)
+        }
+        let img_p3 = new Image();
+        img_p3.src = "motorcycle_blue.png"
+        img_p3.onload = () => {
+            loading++
+            game.assets_check(loading)
+        }
+        let img_p4 = new Image();
+        img_p4.src = "motorcycle_white.png"
+        img_p4.onload = () => {
             loading++
             game.assets_check(loading)
         }
@@ -94,7 +119,6 @@
             constructor(name, key1, opis_key1, key2, opis_key2, number) {
                 this.alive = true
                 this.number = number
-                this.color = Math.random() * 255 + "," + Math.random() * 255 + "," + Math.random() * 255
                 this.name = name
                 this.key1 = key1
                 this.key2 = key2
@@ -119,13 +143,11 @@
             generate_player() {
                 let cv = document.getElementById("canvas")
                 let ctx = cv.getContext("2d")
-                ctx.strokeStyle = "rgba(" + this.color + ",1)"
+                ctx.strokeStyle = "rgba(0,0,0,1)"
                 ctx.lineWidth = game.lwid
                 ctx.beginPath()
-                ctx.moveTo(this.x - this.speed, this.y)
-                ctx.lineTo(this.x, this.y)
+                ctx.drawImage(img_p1, 0, 0, 256, 128, this.x - this.speed - 32, this.y - 8, 32, 16)
                 ctx.closePath()
-                ctx.stroke()
             }
 
             game_init() {
@@ -158,13 +180,16 @@
                     ctx.closePath()
                 }
 
-                ctx.beginPath()
-                ctx.moveTo(this.tab[this.tab.length - 1].x, this.tab[this.tab.length - 1].y)
-                ctx.strokeStyle = "rgba(" + this.color + ",1)"
+                // ctx.moveTo(this.tab[this.tab.length - 1].x, this.tab[this.tab.length - 1].y)
+                ctx.strokeStyle = "rgba(0,0,0,1)"
                 this.x = this.x + (this.speed * Math.sin((2 * Math.PI / 360) * this.angle))
                 this.y = this.y + (this.speed * Math.cos((2 * Math.PI / 360) * this.angle))
-                ctx.lineTo(this.x, this.y)
-                ctx.stroke()
+                // ctx.lineTo(this.x, this.y)
+                // ctx.stroke()
+                ctx.beginPath()
+                // ctx.rotate(Math.sin((2 * Math.PI / 360) * this.angle))
+                ctx.drawImage(img_p1, 0, 0, 256, 128, this.x - this.speed - 32, this.y - 8, 32, 16)
+                ctx.closePath()
 
                 this.tab.push({
                     x: this.x,
@@ -181,7 +206,7 @@
                 let cv = document.getElementById("canvas")
                 let ctx = cv.getContext("2d")
                 ctx.lineWidth = this.lwid
-                ctx.strokeStyle = "rgb(0,0,0)"
+                ctx.strokeStyle = "rgb(0,0,0,1)"
 
                 ctx.beginPath()
                 ctx.arc(game.hei / 2, game.hei / 2, game.hei / 2 - game.lwid / 2, (2 * Math.PI) / 360 * 270, (2 * Math.PI) / 360 * 90, true);
@@ -285,7 +310,7 @@
             wid: 600,
             hei: 300,
             lwid: 4,
-            assets: 2,
+            assets: 6,
 
             assets_check: function (x) {
                 if (this.assets <= x) {
@@ -335,7 +360,7 @@
                 ctx.clearRect(0, 0, this.wid, this.hei)
 
                 ctx.lineWidth = this.lwid
-                ctx.strokeStyle = "rgb(0,0,0)"
+                ctx.strokeStyle = "rgb(0,0,0,1)"
                 ctx.fillStyle = pat;
                 ctx.beginPath()
                 ctx.moveTo(0, 0)
@@ -374,7 +399,7 @@
                     players.forEach(pl => {
                         pl.movement(kierunki)
                     })
-                }, 500);
+                }, 100);
 
             },
 
