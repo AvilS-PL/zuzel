@@ -92,19 +92,20 @@
         //class Player
         class Player {
             constructor(name, key1, opis_key1, key2, opis_key2, number) {
+                this.alive = true
                 this.number = number
-                this.color = "rgb(" + Math.random() * 255 + ",0,0)"
+                this.color = Math.random() * 255 + "," + Math.random() * 255 + "," + Math.random() * 255
                 this.name = name
                 this.key1 = key1
                 this.key2 = key2
                 this.opis_key1 = opis_key1
                 this.opis_key2 = opis_key2
                 this.angle = 90
-                this.speed = 10
+                this.speed = 5
                 this.x = game.wid / 2
                 this.y = game.hei / 2 + game.hei / 5 + ((game.hei / 2 - game.hei / 5) / 5) * this.number
                 this.tab = [{
-                    x: this.x - 10,
+                    x: this.x - this.speed,
                     y: this.y
                 }, {
                     x: this.x,
@@ -118,10 +119,10 @@
             generate_player() {
                 let cv = document.getElementById("canvas")
                 let ctx = cv.getContext("2d")
-                ctx.strokeStyle = this.color
+                ctx.strokeStyle = "rgba(" + this.color + ",1)"
                 ctx.lineWidth = game.lwid
                 ctx.beginPath()
-                ctx.moveTo(this.x - 10, this.y)
+                ctx.moveTo(this.x - this.speed, this.y)
                 ctx.lineTo(this.x, this.y)
                 ctx.closePath()
                 ctx.stroke()
@@ -139,7 +140,6 @@
             }
 
             movement(temp_key) {
-
                 if (temp_key.includes(this.key2)) {        //prawo
                     this.angle -= 10
                 } else if (temp_key.includes(this.key1)) {     //lewo
@@ -149,12 +149,18 @@
                 let cv = document.getElementById("canvas")
                 let ctx = cv.getContext("2d")
                 ctx.lineWidth = game.lwid
-                ctx.strokeStyle = this.color
-                ctx.beginPath()
-                ctx.moveTo(this.tab[0].x, this.tab[0].y)
                 for (let i = 1; i < this.tab.length; i++) {
+                    ctx.strokeStyle = "rgba(0,0,0," + (i / (this.tab.length - 1)) + ")"
+                    ctx.beginPath()
+                    ctx.moveTo(this.tab[i - 1].x, this.tab[i - 1].y)
                     ctx.lineTo(this.tab[i].x, this.tab[i].y)
+                    ctx.stroke()
+                    ctx.closePath()
                 }
+
+                ctx.beginPath()
+                ctx.moveTo(this.tab[this.tab.length - 1].x, this.tab[this.tab.length - 1].y)
+                ctx.strokeStyle = "rgba(" + this.color + ",1)"
                 this.x = this.x + (this.speed * Math.sin((2 * Math.PI / 360) * this.angle))
                 this.y = this.y + (this.speed * Math.cos((2 * Math.PI / 360) * this.angle))
                 ctx.lineTo(this.x, this.y)
@@ -164,9 +170,37 @@
                     x: this.x,
                     y: this.y
                 })
-                if (this.tab.length > 9) {
+                if (this.tab.length > 19) {
                     this.tab.shift()
                 }
+                this.movement_check()
+            }
+
+            movement_check() {
+                let temp_path_check = 0
+                let cv = document.getElementById("canvas")
+                let ctx = cv.getContext("2d")
+                ctx.lineWidth = this.lwid
+                ctx.strokeStyle = "rgb(0,0,0)"
+
+                ctx.beginPath()
+                ctx.arc(game.hei / 2, game.hei / 2, game.hei / 2 - game.lwid / 2, (2 * Math.PI) / 360 * 270, (2 * Math.PI) / 360 * 90, true);
+                ctx.arc(game.wid - (game.hei / 2), game.hei / 2, game.hei - (game.hei / 2) - game.lwid / 2, (2 * Math.PI) / 360 * 90, (2 * Math.PI) / 360 * 270, true);
+                ctx.closePath()
+                if (!ctx.isPointInPath(this.x, this.y)) {
+                    this.speed = 0
+                    this.alive = false
+                }
+
+                ctx.beginPath()
+                ctx.arc(game.hei / 2, game.hei / 2, game.hei / 5, (2 * Math.PI) / 360 * 90, (2 * Math.PI) / 360 * 270);
+                ctx.arc(game.wid - (game.hei / 2), game.hei / 2, game.hei / 5, (2 * Math.PI) / 360 * 270, (2 * Math.PI) / 360 * 90);
+                ctx.closePath()
+                if (ctx.isPointInPath(this.x, this.y)) {
+                    this.speed = 0
+                    this.alive = false
+                }
+
             }
 
             menu() {
@@ -340,7 +374,7 @@
                     players.forEach(pl => {
                         pl.movement(kierunki)
                     })
-                }, 200);
+                }, 500);
 
             },
 
