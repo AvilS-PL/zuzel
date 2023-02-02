@@ -9,6 +9,10 @@
     <!-- https://pastebin.com/t72hFmf3 -->
     <!-- https://pastebin.com/bwjMTaph -->
     <style>
+        body {
+            background-image: url(./grass_tx3.jpg);
+        }
+
         #main {
             margin: auto;
             text-align: center;
@@ -16,9 +20,9 @@
         }
 
         canvas {
-            border: solid 1px;
+            /* border: solid 1px; */
             border-radius: 5px;
-            box-shadow: 0 0 5px black;
+            /* box-shadow: 0 0 5px black; */
             margin-top: 5px;
             margin-bottom: 5px;
         }
@@ -26,7 +30,7 @@
         button {
             width: 100px;
             height: 50px;
-            background-color: #72727222;
+            background-color: #bbbbbb;
             border: none;
             transition: 300ms;
             margin-left: 5px;
@@ -37,12 +41,12 @@
         }
 
         button:hover {
-            background-color: #09ff00;
+            background-color: #ffffff;
         }
 
         button:disabled {
             color: black;
-            background-color: #ffffff;
+            background-color: #bbbbbbaa;
             opacity: 70%;
         }
 
@@ -339,19 +343,15 @@
                 this.menu_counter.innerText = "Pozostało " + this.counter + " kółek"
 
                 if (this.player_number == 1) {
-                    this.menu_main.style.backgroundColor = "#ff0000cc"
-                    this.menu_main.style.border = "1px solid #ff0000cc"
+                    this.menu_main.style.backgroundColor = "#ff2222"
                 } else if (this.player_number == 2) {
-                    this.menu_main.style.backgroundColor = "#00ff00cc"
-                    this.menu_main.style.border = "1px solid #00ff00cc"
+                    this.menu_main.style.backgroundColor = "#00cc00"
 
                 } else if (this.player_number == 3) {
-                    this.menu_main.style.backgroundColor = "#0000ffcc"
-                    this.menu_main.style.border = "1px solid #0000ffcc"
+                    this.menu_main.style.backgroundColor = "#00aaff"
 
                 } else if (this.player_number == 4) {
                     this.menu_main.style.backgroundColor = "#ffffff"
-                    this.menu_main.style.border = "1px solid #ffffff"
                 }
 
                 this.menu_bt1.onclick = function (el) {
