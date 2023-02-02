@@ -49,29 +49,30 @@
             margin: 5px;
         }
 
-        .menu button {
-            width: 120px;
-            height: 25px;
+        .menu input {
+            margin-right: 20px;
+        }
 
+        .menu button {
+            width: 100px;
+            height: 100%;
+            margin: 0;
         }
     </style>
 </head>
 
 <body onkeydown="klaw1(event)" onkeyup="klaw2(event)">
-    <!-- onclick="click_reset()" -->
     <script defer>
         //helpers
         let game_state = ""
-        let key_change = ""
-        let help = false
 
         //assets
         let kierunek = ""
-        let opis_kierunek = ""
-
+        let kierunek_info = ""
+        let wybrane_kierunki = []
         let kierunki = []
-
         let players = []
+        let players_kol = [0, 0, 0, 0]
         let loading = 0
 
         let img = new Image();
@@ -90,7 +91,8 @@
 
         //class Player
         class Player {
-            constructor(name, key1, opis_key1, key2, opis_key2) {
+            constructor(name, key1, opis_key1, key2, opis_key2, numer) {
+                this.color = "rgb(" + Math.random() * 255 + ",0,0)"
                 this.name = name
                 this.key1 = key1
                 this.key2 = key2
@@ -99,7 +101,7 @@
                 this.angle = 90
                 this.speed = 10
                 this.x = game.wid / 2
-                this.y = game.hei / 2 + game.hei / 5 + ((game.hei / 2 - game.hei / 5) / 5) * (players.length + 1)
+                this.y = game.hei / 2 + game.hei / 5 + ((game.hei / 2 - game.hei / 5) / 5) * numer
                 this.tab = [{
                     x: this.x - 10,
                     y: this.y
@@ -108,30 +110,39 @@
                     y: this.y
                 }]
 
+                this.generate_player()
+                this.menu()
+            }
+
+            generate_player() {
                 let cv = document.getElementById("canvas")
                 let ctx = cv.getContext("2d")
+                ctx.strokeStyle = this.color
                 ctx.lineWidth = game.lwid
                 ctx.beginPath()
                 ctx.moveTo(this.x - 10, this.y)
                 ctx.lineTo(this.x, this.y)
                 ctx.closePath()
                 ctx.stroke()
-                this.menu()
             }
 
             movement(temp_key) {
                 this.menu_bt1.disabled = true
                 this.menu_bt2.disabled = true
+                this.menu_del.disabled = true
+                this.menu_bt1.innerText = this.opis_key1
+                this.menu_bt2.innerText = this.opis_key2
 
-                if (temp_key == this.key2) {        //prawo
+                if (temp_key.includes(this.key2)) {        //prawo
                     this.angle -= 10
-                } else if (temp_key == this.key1) {     //lewo
+                } else if (temp_key.includes(this.key1)) {     //lewo
                     this.angle += 10
                 }
 
                 let cv = document.getElementById("canvas")
                 let ctx = cv.getContext("2d")
                 ctx.lineWidth = game.lwid
+                ctx.strokeStyle = this.color
                 ctx.beginPath()
                 ctx.moveTo(this.tab[0].x, this.tab[0].y)
                 for (let i = 1; i < this.tab.length; i++) {
@@ -157,38 +168,73 @@
                 this.menu_name_input = document.createElement("input")
                 this.menu_bt1 = document.createElement("button")
                 this.menu_bt2 = document.createElement("button")
+                this.menu_del = document.createElement("button")
 
                 this.menu_main.className = "menu"
                 this.menu_name.innerText = "Nazwa gracza:"
                 this.menu_name_input.value = "Player" + (players.length + 1)
                 this.menu_bt1.innerText = this.opis_key1
                 this.menu_bt2.innerText = this.opis_key2
+                this.menu_del.innerText = "Usuń"
 
                 this.menu_bt1.onclick = function (el) {
-                    this.player_key_change(el.target)
+                    this.player_key_change(el.target, "lewo")
                 }.bind(this)
 
                 this.menu_bt2.onclick = function (el) {
-                    this.player_key_change(el.target)
+                    this.player_key_change(el.target, "prawo")
                 }.bind(this)
 
-                this.menu_main.append(this.menu_name, this.menu_name_input, this.menu_bt1, this.menu_bt2)
+                this.menu_del.onclick = function (el) {
+                    this.player_del(el.target)
+                }.bind(this)
+
+                this.menu_main.append(this.menu_name, this.menu_name_input, this.menu_bt1, this.menu_bt2, this.menu_del)
                 document.getElementById("main").append(this.menu_main)
             }
 
-            // player_click_reset() {
-            //     this.menu_bt1.innerText = this.opis_key1
-            //     this.menu_bt2.innerText = this.opis_key2
-            // }
+            player_key_change(el, temp) {
+                el.innerText = "wybierz klawisz"
+                document.getElementById("bt_start").disabled = true
+                let change_key = setInterval(() => {
+                    if (kierunek != "") {
+                        if (temp == "lewo") {
+                            if (wybrane_kierunki.includes(kierunek) && kierunek != this.key1) {
+                                el.innerText = "zajęty klawisz"
+                            } else {
+                                wybrane_kierunki.splice(wybrane_kierunki.indexOf(this.key1), 1)
+                                wybrane_kierunki.push(kierunek)
+                                el.innerText = kierunek_info
+                                this.key1 = kierunek
+                                this.opis_key1 = kierunek_info
 
-            player_key_change(el) {
-                console.log(this)
-                if (key_change == "") {
-                    el.innerText = "wybierz klawisz"
-                    console.log(el)
+                                document.getElementById("bt_start").disabled = false
+                                clearInterval(change_key)
+                            }
 
-                    key_change = el
-                }
+                        } else if (temp == "prawo") {
+                            if (wybrane_kierunki.includes(kierunek) && kierunek != this.key2) {
+                                el.innerText = "zajęty klawisz"
+                            } else {
+                                wybrane_kierunki.splice(wybrane_kierunki.indexOf(this.key2), 1)
+                                wybrane_kierunki.push(kierunek)
+                                el.innerText = kierunek_info
+                                this.key2 = kierunek
+                                this.opis_key2 = kierunek_info
+
+                                document.getElementById("bt_start").disabled = false
+                                clearInterval(change_key)
+                            }
+                        }
+                    }
+                }, 10);
+            }
+
+            player_del() {
+                wybrane_kierunki.splice(wybrane_kierunki.indexOf(this.key1), 1)
+                wybrane_kierunki.splice(wybrane_kierunki.indexOf(this.key2), 1)
+                document.getElementById("main").removeChild(this.menu_main)
+                game.del(this)
             }
         }
 
@@ -247,6 +293,7 @@
                 ctx.clearRect(0, 0, this.wid, this.hei)
 
                 ctx.lineWidth = this.lwid
+                ctx.strokeStyle = "rgb(0,0,0)"
                 ctx.fillStyle = pat;
                 ctx.beginPath()
                 ctx.moveTo(0, 0)
@@ -276,6 +323,12 @@
             start: function () {
                 document.getElementById("bt_init_player").disabled = true
                 document.getElementById("bt_start").disabled = true
+                console.log(kierunki)
+                game.render()
+                players.forEach(pl => {
+                    pl.movement(kierunki)
+                    pl.menu_name_input.disabled = true
+                })
                 setInterval(() => {
                     console.log(kierunki)
                     game.render()
@@ -283,25 +336,30 @@
                         pl.movement(kierunki)
                         pl.menu_name_input.disabled = true
                     })
-                    // console.log(kierunek)
-                    // if (help) {
-                    //     help = false
-                    //     kierunek = ""
-                    // }
                 }, 200);
 
             },
 
             init_player: function () {
                 document.getElementById("bt_start").disabled = false
+                for (let i = 0; i < players_kol.length; i++) {
+                    if (players_kol[i] == 0) {
+
+                    }
+
+                }
                 if (players.length == 0) {
                     players.push(new Player("Player1", "KeyQ", "q", "KeyW", "w"))
+                    wybrane_kierunki.push("KeyQ", "KeyW")
                 } else if (players.length == 1) {
                     players.push(new Player("Player2", "KeyC", "c", "KeyV", "v"))
+                    wybrane_kierunki.push("KeyC", "KeyV")
                 } else if (players.length == 2) {
                     players.push(new Player("Player3", "KeyY", "y", "KeyU", "u"))
+                    wybrane_kierunki.push("KeyY", "KeyU")
                 } else if (players.length == 3) {
                     players.push(new Player("Player4", "KeyK", "k", "KeyL", "l"))
+                    wybrane_kierunki.push("KeyK", "KeyL")
                     document.getElementById("bt_init_player").innerText = "Limit graczy"
                     document.getElementById("bt_init_player").disabled = true
                 } else {
@@ -309,42 +367,33 @@
                     document.getElementById("bt_init_player").disabled = true
                 }
             },
+
+            del: function (gracz) {
+                players.splice(players.indexOf(gracz), 1)
+                document.getElementById("bt_init_player").disabled = false
+                document.getElementById("bt_init_player").innerText = "Dodaj gracza"
+                this.render()
+                players.forEach(pl => {
+                    pl.generate_player()
+                    console.log("1")
+                })
+            }
         }
 
         //klawisze
         function klaw1(e) {
-            // help = false
-            // kierunek = e.code
-            // if (key_change != "") {
-            //     key_change.innerText = "klik"
-            // } else {
-            //     kierunek = e.code
-            //     opis_kierunek = e.key
-            // }
             if (!kierunki.includes(e.code)) {
                 kierunki.push(e.code)
             }
-
+            kierunek = e.code
+            kierunek_info = e.key
         }
 
         function klaw2(e) {
             kierunki.splice(kierunki.indexOf(e.code), 1)
-            // help = true
-            // if (state) {
-
-            // } else {
-            //     kierunek = ""
-            //     opis_kierunek = ""
-            // }
+            kierunek = ""
+            kierunek_info = ""
         }
-
-        // function click_reset() {
-            // if (click_help) {
-            //     players.forEach(pl => {
-            //         pl.player_click_reset()
-            //     })
-            // }
-        // }
 
     </script>
 </body>
