@@ -9,20 +9,45 @@
     <!-- https://pastebin.com/t72hFmf3 -->
     <!-- https://pastebin.com/bwjMTaph -->
     <style>
+        * {
+            font-family: monospace;
+        }
+
         body {
             background-image: url(./grass_tx3.jpg);
+        }
+
+        #dial {
+            position: absolute;
+            top: 30vh;
+            width: 200px;
+            height: 100px;
+            text-align: center;
+            border: none;
+
+            border-radius: 10px;
+            box-shadow: 0 0 10px 2px black;
+            transition: 1s;
+        }
+
+        #info {
+            font-size: 20px;
+            margin-top: 10px;
+        }
+
+        #ok {
+            margin-top: 20px;
+            width: 60px;
+            height: 40px;
         }
 
         #main {
             margin: auto;
             text-align: center;
-            font-family: monospace;
         }
 
         canvas {
-            /* border: solid 1px; */
             border-radius: 5px;
-            /* box-shadow: 0 0 5px black; */
             margin-top: 5px;
             margin-bottom: 5px;
         }
@@ -77,6 +102,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
+
             transition: 300ms;
             border-radius: 5px;
             text-shadow: 0px 0px 3px #ffffffaa;
@@ -98,12 +124,20 @@
             border-radius: 10px;
             background-color: #ffffff;
         }
+
+
+        .menu button:disabled {
+            color: black;
+            background-color: #bbbbbbaa;
+            opacity: 70%;
+        }
     </style>
 </head>
 
 <body onkeydown="klaw1(event)" onkeyup="klaw2(event)">
     <script defer>
         //assets
+        let dial_open = false
         let winner
         let game_state = ""
         let kierunek = ""
@@ -466,6 +500,24 @@
                 if (this.wid < this.hei) {
                     this.hei = this.wid
                 }
+
+                let dial = document.createElement("DIALOG")
+                dial.id = "dial"
+                let info = document.createElement("div")
+                info.innerText = ""
+                info.id = "info"
+                let ok = document.createElement("button")
+                ok.innerText = "ok"
+                ok.id = "ok"
+                ok.addEventListener("click", function () {
+                    dial_open = false
+                    setTimeout(() => {
+                        dial.close()
+                    }, 100);
+                });
+                dial.append(info, ok)
+                document.body.append(dial);
+
                 this.generate_map()
             },
 
@@ -609,23 +661,28 @@
             },
 
             ending: function (result, who) {
-                setTimeout(() => {
-                    if (result == "lost" && who == "you") {
-                        window.alert("Przegrywasz :(")
-                    } else if (result == "win") {
-                        window.alert("Wygrywa " + who)
-                    }
-                    game_state = ""
-                    kierunek = ""
-                    kierunek_info = ""
-                    kierunki = []
-                    this.render()
-                    players.forEach(pl => {
-                        pl.reset()
-                    })
-                    document.getElementById("bt_init_player").disabled = false
-                    if (document.getElementById("bt_start").innerText != "Limit graczy") {
-                        document.getElementById("bt_start").disabled = false
+                if (result == "lost" && who == "you") {
+                    document.getElementById("info").innerText = "Przegrywasz :("
+                } else if (result == "win") {
+                    document.getElementById("info").innerText = "Wygrywa " + who
+                }
+                dial.setAttribute("open", "open")
+                dial_open = true
+                let a = setInterval(() => {
+                    if (!dial_open) {
+                        clearInterval(a)
+                        game_state = ""
+                        kierunek = ""
+                        kierunek_info = ""
+                        kierunki = []
+                        this.render()
+                        players.forEach(pl => {
+                            pl.reset()
+                        })
+                        document.getElementById("bt_init_player").disabled = false
+                        if (document.getElementById("bt_start").innerText != "Limit graczy") {
+                            document.getElementById("bt_start").disabled = false
+                        }
                     }
                 }, 100);
             },
