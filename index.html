@@ -17,24 +17,53 @@
 
         canvas {
             border: solid 1px;
+            border-radius: 5px;
+            box-shadow: 0 0 5px black;
+            margin-top: 5px;
+            margin-bottom: 5px;
         }
 
         button {
             width: 100px;
             height: 50px;
+            background-color: #72727222;
+            border: none;
+            transition: 300ms;
+            margin-left: 5px;
+            margin-right: 5px;
+            border-radius: 10px;
+
+            box-shadow: 0 0 5px black;
+        }
+
+        button:hover {
+            background-color: #09ff00;
         }
 
         button:disabled {
             color: black;
+            background-color: #ffffff;
+            opacity: 70%;
+        }
+
+        input {
+            border: 1px solid black;
+            background-color: #ffffffaa;
+            transition: 300ms;
+        }
+
+        input:hover {
             background-color: #ffffff;
         }
 
         input:disabled {
             color: black;
             background-color: #ffffff;
+            opacity: 70%;
         }
 
         .menu {
+            font-size: 15px;
             box-sizing: border-box;
             margin: auto;
             height: 50px;
@@ -44,20 +73,26 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            transition: 300ms;
+            border-radius: 5px;
+            text-shadow: 0px 0px 3px #ffffffaa;
+            box-shadow: 0 0 5px black;
         }
 
         .menu * {
-            margin: 10px;
-        }
-
-        .menu input {
-            margin-right: 20px;
+            margin: 5px;
         }
 
         .menu button {
             width: 100px;
-            height: 100%;
-            margin: 0;
+            height: 30px;
+            transition: 300ms;
+            background-color: #ccccccaa;
+        }
+
+        .menu button:hover {
+            border-radius: 10px;
+            background-color: #ffffff;
         }
     </style>
 </head>
@@ -232,7 +267,7 @@
                 if (!ctx.isPointInPath(this.x + (16 * Math.sin((2 * Math.PI / 360) * this.angle)), this.y + (16 * Math.cos((2 * Math.PI / 360) * this.angle)))) {
                     this.speed = 0
                     this.alive = false
-                    this.menu_main.style.border = "red 3px solid"
+                    this.menu_main.style.opacity = "30%"
                 }
 
                 ctx.beginPath()
@@ -242,7 +277,7 @@
                 if (ctx.isPointInPath(this.x + (16 * Math.sin((2 * Math.PI / 360) * this.angle)), this.y + (16 * Math.cos((2 * Math.PI / 360) * this.angle)))) {
                     this.speed = 0
                     this.alive = false
-                    this.menu_main.style.border = "red 3px solid"
+                    this.menu_main.style.opacity = "30%"
                 }
 
                 ctx.beginPath()
@@ -302,6 +337,22 @@
                 this.menu_bt2.innerText = this.opis_key2
                 this.menu_del.innerText = "Usuń"
                 this.menu_counter.innerText = "Pozostało " + this.counter + " kółek"
+
+                if (this.player_number == 1) {
+                    this.menu_main.style.backgroundColor = "#ff0000cc"
+                    this.menu_main.style.border = "1px solid #ff0000cc"
+                } else if (this.player_number == 2) {
+                    this.menu_main.style.backgroundColor = "#00ff00cc"
+                    this.menu_main.style.border = "1px solid #00ff00cc"
+
+                } else if (this.player_number == 3) {
+                    this.menu_main.style.backgroundColor = "#0000ffcc"
+                    this.menu_main.style.border = "1px solid #0000ffcc"
+
+                } else if (this.player_number == 4) {
+                    this.menu_main.style.backgroundColor = "#ffffff"
+                    this.menu_main.style.border = "1px solid #ffffff"
+                }
 
                 this.menu_bt1.onclick = function (el) {
                     this.player_key_change(el.target, "lewo")
@@ -382,7 +433,7 @@
                 }]
 
                 this.generate_player()
-                this.menu_main.style.border = "1px solid black"
+                this.menu_main.style.opacity = "100%"
                 this.menu_name_input.disabled = false
                 this.menu_bt1.disabled = false
                 this.menu_bt2.disabled = false
@@ -552,6 +603,9 @@
 
                 }
                 console.log(players_kol)
+                if (players.length < 1) {
+                    document.getElementById("bt_start").disabled = true
+                }
             },
 
             ending: function (result, who) {
