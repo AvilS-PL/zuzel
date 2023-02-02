@@ -116,12 +116,13 @@
 
         //class Player
         class Player {
-            constructor(name, key1, opis_key1, key2, opis_key2, number, color) {
+            constructor(name, key1, opis_key1, key2, opis_key2, number, player_number, color) {
                 this.counter = 5
                 this.checker1 = false
                 this.checker2 = false
                 this.color = color
                 this.alive = true
+                this.player_number = player_number
                 this.number = number
                 this.name = name
                 this.key1 = key1
@@ -142,9 +143,22 @@
 
                 this.generate_player()
                 this.menu()
+
             }
 
             generate_player() {
+                this.x = game.wid / 2
+                this.y = game.hei / 2 + game.hei / 5 + ((game.hei / 2 - game.hei / 5) / 5) * this.number
+                this.tab = [{
+                    x: this.x - this.speed,
+                    y: this.y
+                }, {
+                    x: this.x,
+                    y: this.y
+                }]
+                if (this.menu_name_input) {
+                }
+
                 let cv = document.getElementById("canvas")
                 let ctx = cv.getContext("2d")
                 ctx.strokeStyle = "rgba(0,0,0,1)"
@@ -168,9 +182,9 @@
 
             movement(temp_key) {
                 if (temp_key.includes(this.key2) && this.alive) {        //prawo
-                    this.angle -= 10
+                    this.angle -= 6
                 } else if (temp_key.includes(this.key1) && this.alive) {     //lewo
-                    this.angle += 10
+                    this.angle += 6
                 }
 
                 let cv = document.getElementById("canvas")
@@ -245,6 +259,7 @@
                     this.checker1 = false
                     this.checker2 = false
                     if (this.counter == 0) {
+                        game_state = "win"
                         game.ending("win", this.name)
                     }
                 }
@@ -282,7 +297,7 @@
 
                 this.menu_main.className = "menu"
                 this.menu_name.innerText = "Nazwa gracza:"
-                this.menu_name_input.value = "Player" + this.number
+                this.menu_name_input.value = "Player" + this.player_number
                 this.menu_bt1.innerText = this.opis_key1
                 this.menu_bt2.innerText = this.opis_key2
                 this.menu_del.innerText = "Usuń"
@@ -347,6 +362,34 @@
                 document.getElementById("main").removeChild(this.menu_main)
                 players_kol[this.number - 1] = 0
                 game.del(this)
+            }
+
+            reset() {
+                this.counter = 1
+                this.checker1 = false
+                this.checker2 = false
+                this.alive = true
+                this.angle = 90
+                this.speed = 5
+                this.x = game.wid / 2
+                this.y = game.hei / 2 + game.hei / 5 + ((game.hei / 2 - game.hei / 5) / 5) * this.number
+                this.tab = [{
+                    x: this.x - this.speed,
+                    y: this.y
+                }, {
+                    x: this.x,
+                    y: this.y
+                }]
+
+                this.generate_player()
+                this.menu_main.style.border = "1px solid black"
+                this.menu_name_input.disabled = false
+                this.menu_bt1.disabled = false
+                this.menu_bt2.disabled = false
+                this.menu_del.disabled = false
+                this.menu_bt1.innerText = this.opis_key1
+                this.menu_bt2.innerText = this.opis_key2
+                this.name = this.menu_name_input.value
             }
         }
 
@@ -448,30 +491,7 @@
                 players.forEach(pl => {
                     pl.game_init(kierunki)
                 })
-                let a = setInterval(() => {
-                    let temp_check = 0
-                    game.render()
-                    players.forEach(pl => {
-                        pl.movement(kierunki)
-                        temp_check++
-                        if (pl.alive) {
-                            winner = pl.name
-                        } else {
-                            temp_check--
-                        }
-                    })
-                    if (players.length > 1) {
-                        if (temp_check < 2) {
-                            game.ending("win", winner)
-                        }
-
-                    } else {
-                        if (temp_check < 1) {
-                            game.ending("lost", "you")
-                        }
-                    }
-                }, 50);
-
+                game_state = "play"
             },
 
             init_player: function () {
@@ -480,22 +500,22 @@
                     for (let i = 0; i < players_kol.length; i++) {
                         if (players_kol[i] == 0) {
                             if (!players_kol.includes(1)) {
-                                players.push(new Player("Player1", "KeyQ", "q", "KeyW", "w", i + 1, img_p1))
+                                players.push(new Player("Player1", "KeyQ", "q", "KeyW", "w", i + 1, 1, img_p1))
                                 wybrane_kierunki.push("KeyQ", "KeyW")
                                 players_kol[i] = 1
                                 break
                             } else if (!players_kol.includes(2)) {
-                                players.push(new Player("Player2", "KeyC", "c", "KeyV", "v", i + 1, img_p2))
+                                players.push(new Player("Player2", "KeyC", "c", "KeyV", "v", i + 1, 2, img_p2))
                                 wybrane_kierunki.push("KeyC", "KeyV")
                                 players_kol[i] = 2
                                 break
                             } else if (!players_kol.includes(3)) {
-                                players.push(new Player("Player3", "KeyY", "y", "KeyU", "u", i + 1, img_p3))
+                                players.push(new Player("Player3", "KeyY", "y", "KeyU", "u", i + 1, 3, img_p3))
                                 wybrane_kierunki.push("KeyY", "KeyU")
                                 players_kol[i] = 3
                                 break
                             } else if (!players_kol.includes(4)) {
-                                players.push(new Player("Player4", "KeyK", "k", "KeyL", "l", i + 1, img_p4))
+                                players.push(new Player("Player4", "KeyK", "k", "KeyL", "l", i + 1, 4, img_p4))
                                 wybrane_kierunki.push("KeyK", "KeyL")
                                 players_kol[i] = 4
                                 break
@@ -518,22 +538,42 @@
                 document.getElementById("bt_init_player").disabled = false
                 document.getElementById("bt_init_player").innerText = "Dodaj gracza"
                 this.render()
-                players.forEach(pl => {
-                    pl.generate_player()
-                })
+
+                for (let i = 0; i < players.length; i++) {
+                    for (let j = 1; j <= players_kol.length; j++) {
+                        if (players[i].number > j && players_kol[j - 1] == 0) {
+                            players_kol[players[i].number - 1] = 0
+                            players_kol[j - 1] = players[i].player_number
+                            players[i].number = j
+                            break
+                        }
+                    }
+                    players[i].generate_player()
+
+                }
+                console.log(players_kol)
             },
 
             ending: function (result, who) {
-                clearInterval(this.a)
-                console.log(result)
-                console.log(who)
-                // setTimeout(() => {
-                //     if (result == "lost" && who == "you") {
-                //         window.alert("Przegrywasz :(")
-                //     } else if (result == "win") {
-                //         window.alert("Wygrywa " + who)
-                //     }
-                // }, 100);
+                setTimeout(() => {
+                    if (result == "lost" && who == "you") {
+                        window.alert("Przegrywasz :(")
+                    } else if (result == "win") {
+                        window.alert("Wygrywa " + who)
+                    }
+                    game_state = ""
+                    kierunek = ""
+                    kierunek_info = ""
+                    kierunki = []
+                    this.render()
+                    players.forEach(pl => {
+                        pl.reset()
+                    })
+                    document.getElementById("bt_init_player").disabled = false
+                    if (document.getElementById("bt_start").innerText != "Limit graczy") {
+                        document.getElementById("bt_start").disabled = false
+                    }
+                }, 100);
             },
         }
 
@@ -552,6 +592,33 @@
             kierunek_info = ""
         }
 
+        setInterval(() => {
+            if (game_state == "play") {
+                let temp_check = 0
+                game.render()
+                players.forEach(pl => {
+                    pl.movement(kierunki)
+                    temp_check++
+                    if (pl.alive) {
+                        winner = pl.name
+                    } else {
+                        temp_check--
+                    }
+                })
+                if (players.length > 1) {
+                    if (temp_check < 2) {
+                        game_state = "end"
+                        game.ending("win", winner)
+                    }
+
+                } else {
+                    if (temp_check < 1) {
+                        game_state = "end"
+                        game.ending("lost", "you")
+                    }
+                }
+            }
+        }, 50);
     </script>
 </body>
 
