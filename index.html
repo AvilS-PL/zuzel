@@ -24,6 +24,16 @@
             height: 50px;
         }
 
+        button:disabled {
+            color: black;
+            background-color: #ffffff;
+        }
+
+        input:disabled {
+            color: black;
+            background-color: #ffffff;
+        }
+
         .menu {
             margin: auto;
             height: 50px;
@@ -48,13 +58,19 @@
 </head>
 
 <body onkeydown="klaw1(event)" onkeyup="klaw2(event)">
+    <!-- onclick="click_reset()" -->
     <script defer>
-        //assets
-        let state = ""
+        //helpers
+        let game_state = ""
+        let key_change = ""
+        let help = false
 
+        //assets
         let kierunek = ""
         let opis_kierunek = ""
-        let help = false
+
+        let kierunki = []
+
         let players = []
         let loading = 0
 
@@ -104,8 +120,6 @@
             }
 
             movement(temp_key) {
-                this.menu_bt1.innerText = this.opis_key1
-                this.menu_bt2.innerText = this.opis_key2
                 this.menu_bt1.disabled = true
                 this.menu_bt2.disabled = true
 
@@ -150,12 +164,31 @@
                 this.menu_bt1.innerText = this.opis_key1
                 this.menu_bt2.innerText = this.opis_key2
 
-                this.menu_bt1.onclick = function () {
-                    this.menu_bt1.innerText = "wybierz klawisz"
+                this.menu_bt1.onclick = function (el) {
+                    this.player_key_change(el.target)
+                }.bind(this)
+
+                this.menu_bt2.onclick = function (el) {
+                    this.player_key_change(el.target)
                 }.bind(this)
 
                 this.menu_main.append(this.menu_name, this.menu_name_input, this.menu_bt1, this.menu_bt2)
                 document.getElementById("main").append(this.menu_main)
+            }
+
+            // player_click_reset() {
+            //     this.menu_bt1.innerText = this.opis_key1
+            //     this.menu_bt2.innerText = this.opis_key2
+            // }
+
+            player_key_change(el) {
+                console.log(this)
+                if (key_change == "") {
+                    el.innerText = "wybierz klawisz"
+                    console.log(el)
+
+                    key_change = el
+                }
             }
         }
 
@@ -191,8 +224,10 @@
                 cv.height = this.hei
 
                 let bt_start = document.createElement("button")
+                bt_start.id = "bt_start"
                 bt_start.addEventListener("click", this.start)
                 bt_start.innerText = "Start"
+                bt_start.disabled = true
 
                 let bt_init_player = document.createElement("button")
                 bt_init_player.id = "bt_init_player"
@@ -239,31 +274,34 @@
             },
 
             start: function () {
+                document.getElementById("bt_init_player").disabled = true
+                document.getElementById("bt_start").disabled = true
                 setInterval(() => {
+                    console.log(kierunki)
                     game.render()
                     players.forEach(pl => {
-                        pl.movement(kierunek)
+                        pl.movement(kierunki)
                         pl.menu_name_input.disabled = true
-                        pl
                     })
-                    console.log(kierunek)
-                    if (help) {
-                        help = false
-                        kierunek = ""
-                    }
+                    // console.log(kierunek)
+                    // if (help) {
+                    //     help = false
+                    //     kierunek = ""
+                    // }
                 }, 200);
 
             },
 
             init_player: function () {
+                document.getElementById("bt_start").disabled = false
                 if (players.length == 0) {
-                    players.push(new Player("ala", "KeyQ", "q", "KeyW", "w"))
+                    players.push(new Player("Player1", "KeyQ", "q", "KeyW", "w"))
                 } else if (players.length == 1) {
-                    players.push(new Player("ala", "KeyC", "c", "KeyV", "v"))
+                    players.push(new Player("Player2", "KeyC", "c", "KeyV", "v"))
                 } else if (players.length == 2) {
-                    players.push(new Player("ala", "KeyY", "y", "KeyU", "u"))
+                    players.push(new Player("Player3", "KeyY", "y", "KeyU", "u"))
                 } else if (players.length == 3) {
-                    players.push(new Player("ala", "KeyK", "k", "KeyL", "l"))
+                    players.push(new Player("Player4", "KeyK", "k", "KeyL", "l"))
                     document.getElementById("bt_init_player").innerText = "Limit graczy"
                     document.getElementById("bt_init_player").disabled = true
                 } else {
@@ -275,25 +313,38 @@
 
         //klawisze
         function klaw1(e) {
-            help = false
-            kierunek = e.code
-            if (state == "") {
-
-            } else if (state == "pick") {
-                kierunek = e.code
-                opis_kierunek = e.key
+            // help = false
+            // kierunek = e.code
+            // if (key_change != "") {
+            //     key_change.innerText = "klik"
+            // } else {
+            //     kierunek = e.code
+            //     opis_kierunek = e.key
+            // }
+            if (!kierunki.includes(e.code)) {
+                kierunki.push(e.code)
             }
+
         }
 
         function klaw2(e) {
-            help = true
-            if (state) {
+            kierunki.splice(kierunki.indexOf(e.code), 1)
+            // help = true
+            // if (state) {
 
-            } else {
-                kierunek = ""
-                opis_kierunek = ""
-            }
+            // } else {
+            //     kierunek = ""
+            //     opis_kierunek = ""
+            // }
         }
+
+        // function click_reset() {
+            // if (click_help) {
+            //     players.forEach(pl => {
+            //         pl.player_click_reset()
+            //     })
+            // }
+        // }
 
     </script>
 </body>
