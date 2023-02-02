@@ -203,7 +203,7 @@
                 this.opis_key1 = opis_key1
                 this.opis_key2 = opis_key2
                 this.angle = 90
-                this.speed = 5
+                this.speed = 4
                 this.x = game.wid / 2
                 this.y = game.hei / 2 + game.hei / 5 + ((game.hei / 2 - game.hei / 5) / 5) * this.number
                 this.tab = [{
@@ -255,9 +255,9 @@
 
             movement(temp_key) {
                 if (temp_key.includes(this.key2) && this.alive) {        //prawo
-                    this.angle -= 6
+                    this.angle -= 3
                 } else if (temp_key.includes(this.key1) && this.alive) {     //lewo
-                    this.angle += 6
+                    this.angle += 3
                 }
 
                 let cv = document.getElementById("canvas")
@@ -450,12 +450,13 @@
             }
 
             reset() {
-                this.counter = 1
+                this.counter = 5
+                this.menu_counter.innerText = "Pozostało " + this.counter + " kółek"
                 this.checker1 = false
                 this.checker2 = false
                 this.alive = true
                 this.angle = 90
-                this.speed = 5
+                this.speed = 4
                 this.x = game.wid / 2
                 this.y = game.hei / 2 + game.hei / 5 + ((game.hei / 2 - game.hei / 5) / 5) * this.number
                 this.tab = [{
@@ -729,7 +730,7 @@
                     }
                 }
             }
-        }, 50);
+        }, 16);
     </script>
 </body>
 
