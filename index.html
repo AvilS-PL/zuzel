@@ -118,6 +118,8 @@
         class Player {
             constructor(name, key1, opis_key1, key2, opis_key2, number, color) {
                 this.counter = 5
+                this.checker1 = false
+                this.checker2 = false
                 this.color = color
                 this.alive = true
                 this.number = number
@@ -166,9 +168,9 @@
 
             movement(temp_key) {
                 if (temp_key.includes(this.key2) && this.alive) {        //prawo
-                    this.angle -= 5
+                    this.angle -= 10
                 } else if (temp_key.includes(this.key1) && this.alive) {     //lewo
-                    this.angle += 5
+                    this.angle += 10
                 }
 
                 let cv = document.getElementById("canvas")
@@ -229,6 +231,44 @@
                     this.menu_main.style.border = "red 3px solid"
                 }
 
+                ctx.beginPath()
+                ctx.moveTo(game.wid / 2 + 16, game.hei / 2 + game.hei / 5)
+                ctx.lineTo(game.wid / 2 + 26, game.hei / 2 + game.hei / 5)
+                ctx.lineTo(game.wid / 2 + 26, game.hei)
+                ctx.lineTo(game.wid / 2 + 16, game.hei)
+                ctx.closePath()
+                if (ctx.isPointInPath(this.x + (16 * Math.sin((2 * Math.PI / 360) * this.angle)), this.y + (16 * Math.cos((2 * Math.PI / 360) * this.angle)))) {
+                    if (this.checker1 && this.checker2) {
+                        this.counter--
+                        this.menu_counter.innerText = "Pozostało " + this.counter + " kółek"
+                    }
+                    this.checker1 = false
+                    this.checker2 = false
+                    if (this.counter == 0) {
+                        game.ending("win", this.name)
+                    }
+                }
+
+                ctx.beginPath()
+                ctx.moveTo(game.wid / 2 + 58, game.hei / 2 + game.hei / 5)
+                ctx.lineTo(game.wid / 2 + 68, game.hei / 2 + game.hei / 5)
+                ctx.lineTo(game.wid / 2 + 68, game.hei)
+                ctx.lineTo(game.wid / 2 + 58, game.hei)
+                ctx.closePath()
+                if (ctx.isPointInPath(this.x + (16 * Math.sin((2 * Math.PI / 360) * this.angle)), this.y + (16 * Math.cos((2 * Math.PI / 360) * this.angle)))) {
+                    this.checker1 = true
+                    this.checker2 = false
+                }
+
+                ctx.beginPath()
+                ctx.moveTo(game.wid / 2 - 16, game.hei / 2 + game.hei / 5)
+                ctx.lineTo(game.wid / 2 - 26, game.hei / 2 + game.hei / 5)
+                ctx.lineTo(game.wid / 2 - 26, game.hei)
+                ctx.lineTo(game.wid / 2 - 16, game.hei)
+                ctx.closePath()
+                if (ctx.isPointInPath(this.x + (16 * Math.sin((2 * Math.PI / 360) * this.angle)), this.y + (16 * Math.cos((2 * Math.PI / 360) * this.angle)))) {
+                    this.checker2 = true
+                }
             }
 
             menu() {
@@ -375,7 +415,7 @@
                 ctx.closePath()
                 ctx.fill()
 
-                ctx.fillStyle = pat2;
+                ctx.fillStyle = pat2
                 ctx.beginPath()
                 ctx.arc(this.hei / 2, this.hei / 2, this.hei / 2 - this.lwid / 2, (2 * Math.PI) / 360 * 270, (2 * Math.PI) / 360 * 90, true);
                 ctx.arc(this.wid - (this.hei / 2), this.hei / 2, this.hei - (this.hei / 2) - this.lwid / 2, (2 * Math.PI) / 360 * 90, (2 * Math.PI) / 360 * 270, true);
@@ -383,12 +423,21 @@
                 ctx.stroke()
                 ctx.fill()
 
-                ctx.fillStyle = pat;
+                ctx.fillStyle = pat
                 ctx.beginPath()
                 ctx.arc(this.hei / 2, this.hei / 2, this.hei / 5, (2 * Math.PI) / 360 * 90, (2 * Math.PI) / 360 * 270);
                 ctx.arc(this.wid - (this.hei / 2), this.hei / 2, this.hei / 5, (2 * Math.PI) / 360 * 270, (2 * Math.PI) / 360 * 90);
                 ctx.closePath()
                 ctx.stroke()
+                ctx.fill()
+
+                ctx.fillStyle = "black"
+                ctx.beginPath()
+                ctx.moveTo(game.wid / 2 + 16, game.hei / 2 + game.hei / 5)
+                ctx.lineTo(game.wid / 2 + 26, game.hei / 2 + game.hei / 5)
+                ctx.lineTo(game.wid / 2 + 26, game.hei)
+                ctx.lineTo(game.wid / 2 + 16, game.hei)
+                ctx.closePath()
                 ctx.fill()
             },
 
@@ -413,20 +462,12 @@
                     })
                     if (players.length > 1) {
                         if (temp_check < 2) {
-                            clearInterval(a)
-                            setTimeout(() => {
-                                window.alert("Wygrywa " + winner)
-                                game.ending("win")
-                            }, 100);
+                            game.ending("win", winner)
                         }
 
                     } else {
                         if (temp_check < 1) {
-                            clearInterval(a)
-                            setTimeout(() => {
-                                window.alert("Przegrywasz :(")
-                                game.ending("lost")
-                            }, 100);
+                            game.ending("lost", "you")
                         }
                     }
                 }, 50);
@@ -482,8 +523,17 @@
                 })
             },
 
-            ending: function (result) {
-
+            ending: function (result, who) {
+                clearInterval(this.a)
+                console.log(result)
+                console.log(who)
+                // setTimeout(() => {
+                //     if (result == "lost" && who == "you") {
+                //         window.alert("Przegrywasz :(")
+                //     } else if (result == "win") {
+                //         window.alert("Wygrywa " + who)
+                //     }
+                // }, 100);
             },
         }
 
