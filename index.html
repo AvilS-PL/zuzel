@@ -107,6 +107,22 @@
             border-radius: 5px;
             text-shadow: 0px 0px 3px #ffffffaa;
             box-shadow: 0 0 5px black;
+
+
+            animation-name: in_start;
+            animation-duration: 300ms;
+        }
+
+        @keyframes in_start {
+            0% {
+                opacity: 0%;
+                margin-top: 50px;
+            }
+
+            100% {
+                opacity: 100%;
+                margin-top: 10px;
+            }
         }
 
         .menu * {
@@ -405,8 +421,19 @@
             }
 
             player_key_change(el, temp) {
-                el.innerText = "wybierz klawisz"
+                players.forEach(pl => {
+                    pl.menu_bt1.disabled = true
+                    pl.menu_bt2.disabled = true
+                    pl.menu_del.disabled = true
+                    pl.menu_name_input.disabled = true
+                })
+                el.disabled = false
+                el.style.height = "40px"
+                this.menu_main.style.opacity = "100%"
+                this.menu_main.style.height = "50px"
                 document.getElementById("bt_start").disabled = true
+                document.getElementById("bt_init_player").disabled = true
+                el.innerText = "wybierz klawisz"
                 let change_key = setInterval(() => {
                     if (kierunek != "") {
                         if (temp == "lewo") {
@@ -420,7 +447,17 @@
                                 this.opis_key1 = kierunek_info
 
                                 document.getElementById("bt_start").disabled = false
+                                document.getElementById("bt_init_player").disabled = false
                                 clearInterval(change_key)
+                                players.forEach(pl => {
+                                    pl.menu_bt1.disabled = false
+                                    pl.menu_bt2.disabled = false
+                                    pl.menu_del.disabled = false
+                                    pl.menu_name_input.disabled = false
+                                    pl.menu_main.style.opacity = "100%"
+                                })
+                                this.menu_main.style.height = "50px"
+                                el.style.height = "30px"
                             }
 
                         } else if (temp == "prawo") {
@@ -434,7 +471,17 @@
                                 this.opis_key2 = kierunek_info
 
                                 document.getElementById("bt_start").disabled = false
+                                document.getElementById("bt_init_player").disabled = false
                                 clearInterval(change_key)
+                                players.forEach(pl => {
+                                    pl.menu_bt1.disabled = false
+                                    pl.menu_bt2.disabled = false
+                                    pl.menu_del.disabled = false
+                                    pl.menu_name_input.disabled = false
+                                    pl.menu_main.style.opacity = "100%"
+                                })
+                                this.menu_main.style.height = "50px"
+                                el.style.height = "30px"
                             }
                         }
                     }
@@ -482,7 +529,7 @@
         //main object
         let game = {
             wid: 800,
-            hei: 400,
+            hei: 300,
             lwid: 4,
             assets: 6,
 
