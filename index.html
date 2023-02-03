@@ -20,7 +20,7 @@
         #dial {
             position: absolute;
             top: 30vh;
-            width: 200px;
+            width: 300px;
             height: 100px;
             text-align: center;
             border: none;
@@ -28,6 +28,24 @@
             border-radius: 10px;
             box-shadow: 0 0 10px 2px black;
             transition: 1s;
+            animation-name: dial_start;
+            animation-duration: 400ms;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+
+        @keyframes dial_start {
+            0% {
+                opacity: 0%;
+                margin-top: 50px;
+                width: 200px;
+            }
+
+            100% {
+                opacity: 100%;
+                margin-top: 0;
+                width: 300px;
+            }
         }
 
         #info {
@@ -109,11 +127,11 @@
             box-shadow: 0 0 5px black;
 
 
-            animation-name: in_start;
+            animation-name: menu_start;
             animation-duration: 300ms;
         }
 
-        @keyframes in_start {
+        @keyframes menu_start {
             0% {
                 opacity: 0%;
                 margin-top: 50px;
@@ -387,6 +405,7 @@
                 this.menu_main.className = "menu"
                 this.menu_name.innerText = "Nazwa gracza:"
                 this.menu_name_input.value = "Player" + this.player_number
+                this.menu_name_input.maxLength = "18"
                 this.menu_bt1.innerText = this.opis_key1
                 this.menu_bt2.innerText = this.opis_key2
                 this.menu_del.innerText = "Usuń"
