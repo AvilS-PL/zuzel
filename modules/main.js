@@ -1,40 +1,44 @@
+import { dane, img, img2, img_p1, img_p2, img_p3, img_p4 } from "./assets.js"
+import { Player } from "./player.js"
+import { game } from "./map.js"
+
 //klawisze
 document.getElementById("body").onkeydown = function (e) {
-    if (!kierunki.includes(e.code)) {
-        kierunki.push(e.code)
+    if (!dane.kierunki.includes(e.code)) {
+        dane.kierunki.push(e.code)
     }
-    kierunek = e.code
-    kierunek_info = e.key
+    dane.kierunek = e.code
+    dane.kierunek_info = e.key
 }
 
 document.getElementById("body").onkeyup = function (e) {
-    kierunki.splice(kierunki.indexOf(e.code), 1)
-    kierunek = ""
-    kierunek_info = ""
+    dane.kierunki.splice(dane.kierunki.indexOf(e.code), 1)
+    dane.kierunek = ""
+    dane.kierunek_info = ""
 }
 
 setInterval(() => {
-    if (game_state == "play") {
+    if (dane.game_state == "play") {
         let temp_check = 0
         game.render()
-        players.forEach(pl => {
-            pl.movement(kierunki)
+        dane.players.forEach(pl => {
+            pl.movement(dane.kierunki)
             temp_check++
             if (pl.alive) {
-                winner = pl.name
+                dane.winner = pl.name
             } else {
                 temp_check--
             }
         })
-        if (players.length > 1) {
+        if (dane.players.length > 1) {
             if (temp_check < 2) {
-                game_state = "end"
-                game.ending("win", winner)
+                dane.game_state = "end"
+                game.ending("win", dane.winner)
             }
 
         } else {
             if (temp_check < 1) {
-                game_state = "end"
+                dane.game_state = "end"
                 game.ending("lost", "you")
             }
         }

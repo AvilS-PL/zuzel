@@ -1,5 +1,8 @@
+import { Player } from "./player.js"
+import { dane, img, img2, img_p1, img_p2, img_p3, img_p4 } from "./assets.js"
+
 //main object
-let game = {
+export let game = {
     wid: 800,
     hei: 300,
     lwid: 4,
@@ -30,7 +33,7 @@ let game = {
         ok.innerText = "ok"
         ok.id = "ok"
         ok.addEventListener("click", function () {
-            dial_open = false
+            dane.dial_open = false
             setTimeout(() => {
                 dial.close()
             }, 100);
@@ -111,36 +114,36 @@ let game = {
         document.getElementById("bt_init_player").disabled = true
         document.getElementById("bt_start").disabled = true
         game.render()
-        players.forEach(pl => {
-            pl.game_init(kierunki)
+        dane.players.forEach(pl => {
+            pl.game_init(dane.kierunki)
         })
-        game_state = "play"
+        dane.game_state = "play"
     },
 
     init_player: function () {
         document.getElementById("bt_start").disabled = false
-        if (players.length < 4) {
-            for (let i = 0; i < players_kol.length; i++) {
-                if (players_kol[i] == 0) {
-                    if (!players_kol.includes(1)) {
-                        players.push(new Player("Player1", "KeyQ", "q", "KeyW", "w", i + 1, 1, img_p1))
-                        wybrane_kierunki.push("KeyQ", "KeyW")
-                        players_kol[i] = 1
+        if (dane.players.length < 4) {
+            for (let i = 0; i < dane.players_kol.length; i++) {
+                if (dane.players_kol[i] == 0) {
+                    if (!dane.players_kol.includes(1)) {
+                        dane.players.push(new Player("Player1", "KeyQ", "q", "KeyW", "w", i + 1, 1, img_p1))
+                        dane.wybrane_kierunki.push("KeyQ", "KeyW")
+                        dane.players_kol[i] = 1
                         break
-                    } else if (!players_kol.includes(2)) {
-                        players.push(new Player("Player2", "KeyC", "c", "KeyV", "v", i + 1, 2, img_p2))
-                        wybrane_kierunki.push("KeyC", "KeyV")
-                        players_kol[i] = 2
+                    } else if (!dane.players_kol.includes(2)) {
+                        dane.players.push(new Player("Player2", "KeyC", "c", "KeyV", "v", i + 1, 2, img_p2))
+                        dane.wybrane_kierunki.push("KeyC", "KeyV")
+                        dane.players_kol[i] = 2
                         break
-                    } else if (!players_kol.includes(3)) {
-                        players.push(new Player("Player3", "KeyY", "y", "KeyU", "u", i + 1, 3, img_p3))
-                        wybrane_kierunki.push("KeyY", "KeyU")
-                        players_kol[i] = 3
+                    } else if (!dane.players_kol.includes(3)) {
+                        dane.players.push(new Player("Player3", "KeyY", "y", "KeyU", "u", i + 1, 3, img_p3))
+                        dane.wybrane_kierunki.push("KeyY", "KeyU")
+                        dane.players_kol[i] = 3
                         break
-                    } else if (!players_kol.includes(4)) {
-                        players.push(new Player("Player4", "KeyK", "k", "KeyL", "l", i + 1, 4, img_p4))
-                        wybrane_kierunki.push("KeyK", "KeyL")
-                        players_kol[i] = 4
+                    } else if (!dane.players_kol.includes(4)) {
+                        dane.players.push(new Player("Player4", "KeyK", "k", "KeyL", "l", i + 1, 4, img_p4))
+                        dane.wybrane_kierunki.push("KeyK", "KeyL")
+                        dane.players_kol[i] = 4
                         break
                     }
                 }
@@ -149,7 +152,7 @@ let game = {
             document.getElementById("bt_init_player").innerText = "Limit graczy"
             document.getElementById("bt_init_player").disabled = true
         }
-        if (players.length == 4) {
+        if (dane.players.length == 4) {
             document.getElementById("bt_init_player").innerText = "Limit graczy"
             document.getElementById("bt_init_player").disabled = true
         }
@@ -157,25 +160,25 @@ let game = {
     },
 
     del: function (gracz) {
-        players.splice(players.indexOf(gracz), 1)
+        dane.players.splice(dane.players.indexOf(gracz), 1)
         document.getElementById("bt_init_player").disabled = false
         document.getElementById("bt_init_player").innerText = "Dodaj gracza"
         this.render()
 
-        for (let i = 0; i < players.length; i++) {
-            for (let j = 1; j <= players_kol.length; j++) {
-                if (players[i].number > j && players_kol[j - 1] == 0) {
-                    players_kol[players[i].number - 1] = 0
-                    players_kol[j - 1] = players[i].player_number
-                    players[i].number = j
+        for (let i = 0; i < dane.players.length; i++) {
+            for (let j = 1; j <= dane.players_kol.length; j++) {
+                if (dane.players[i].number > j && dane.players_kol[j - 1] == 0) {
+                    dane.players_kol[dane.players[i].number - 1] = 0
+                    dane.players_kol[j - 1] = dane.players[i].player_number
+                    dane.players[i].number = j
                     break
                 }
             }
-            players[i].generate_player()
+            dane.players[i].generate_player()
 
         }
-        console.log(players_kol)
-        if (players.length < 1) {
+        console.log(dane.players_kol)
+        if (dane.players.length < 1) {
             document.getElementById("bt_start").disabled = true
         }
     },
@@ -187,16 +190,16 @@ let game = {
             document.getElementById("info").innerText = "Wygrywa " + who
         }
         dial.setAttribute("open", "open")
-        dial_open = true
+        dane.dial_open = true
         let a = setInterval(() => {
-            if (!dial_open) {
+            if (!dane.dial_open) {
                 clearInterval(a)
-                game_state = ""
-                kierunek = ""
-                kierunek_info = ""
-                kierunki = []
+                dane.game_state = ""
+                dane.kierunek = ""
+                dane.kierunek_info = ""
+                dane.kierunki = []
                 this.render()
-                players.forEach(pl => {
+                dane.players.forEach(pl => {
                     pl.reset()
                 })
                 document.getElementById("bt_init_player").disabled = false

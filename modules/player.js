@@ -1,5 +1,8 @@
+import { game } from "./map.js"
+import { dane, img, img2, img_p1, img_p2, img_p3, img_p4 } from "./assets.js"
+
 //class Player
-class Player {
+export class Player {
     constructor(name, key1, opis_key1, key2, opis_key2, number, player_number, color) {
         this.counter = 5
         this.checker1 = false
@@ -143,7 +146,7 @@ class Player {
             this.checker1 = false
             this.checker2 = false
             if (this.counter == 0) {
-                game_state = "win"
+                dane.game_state = "win"
                 game.ending("win", this.name)
             }
         }
@@ -217,7 +220,7 @@ class Player {
     }
 
     player_key_change(el, temp) {
-        players.forEach(pl => {
+        dane.players.forEach(pl => {
             pl.menu_bt1.disabled = true
             pl.menu_bt2.disabled = true
             pl.menu_del.disabled = true
@@ -231,21 +234,21 @@ class Player {
         document.getElementById("bt_init_player").disabled = true
         el.innerText = "wybierz klawisz"
         let change_key = setInterval(() => {
-            if (kierunek != "") {
+            if (dane.kierunek != "") {
                 if (temp == "lewo") {
-                    if (wybrane_kierunki.includes(kierunek) && kierunek != this.key1) {
+                    if (dane.wybrane_kierunki.includes(dane.kierunek) && dane.kierunek != this.key1) {
                         el.innerText = "zajęty klawisz"
                     } else {
-                        wybrane_kierunki.splice(wybrane_kierunki.indexOf(this.key1), 1)
-                        wybrane_kierunki.push(kierunek)
-                        el.innerText = kierunek_info
-                        this.key1 = kierunek
-                        this.opis_key1 = kierunek_info
+                        dane.wybrane_kierunki.splice(dane.wybrane_kierunki.indexOf(this.key1), 1)
+                        dane.wybrane_kierunki.push(dane.kierunek)
+                        el.innerText = dane.kierunek_info
+                        this.key1 = dane.kierunek
+                        this.opis_key1 = dane.kierunek_info
 
                         document.getElementById("bt_start").disabled = false
                         document.getElementById("bt_init_player").disabled = false
                         clearInterval(change_key)
-                        players.forEach(pl => {
+                        dane.players.forEach(pl => {
                             pl.menu_bt1.disabled = false
                             pl.menu_bt2.disabled = false
                             pl.menu_del.disabled = false
@@ -257,19 +260,19 @@ class Player {
                     }
 
                 } else if (temp == "prawo") {
-                    if (wybrane_kierunki.includes(kierunek) && kierunek != this.key2) {
+                    if (dane.wybrane_kierunki.includes(dane.kierunek) && dane.kierunek != this.key2) {
                         el.innerText = "zajęty klawisz"
                     } else {
-                        wybrane_kierunki.splice(wybrane_kierunki.indexOf(this.key2), 1)
-                        wybrane_kierunki.push(kierunek)
-                        el.innerText = kierunek_info
-                        this.key2 = kierunek
-                        this.opis_key2 = kierunek_info
+                        dane.wybrane_kierunki.splice(dane.wybrane_kierunki.indexOf(this.key2), 1)
+                        dane.wybrane_kierunki.push(dane.kierunek)
+                        el.innerText = dane.kierunek_info
+                        this.key2 = dane.kierunek
+                        this.opis_key2 = dane.kierunek_info
 
                         document.getElementById("bt_start").disabled = false
                         document.getElementById("bt_init_player").disabled = false
                         clearInterval(change_key)
-                        players.forEach(pl => {
+                        dane.players.forEach(pl => {
                             pl.menu_bt1.disabled = false
                             pl.menu_bt2.disabled = false
                             pl.menu_del.disabled = false
@@ -285,10 +288,10 @@ class Player {
     }
 
     player_del() {
-        wybrane_kierunki.splice(wybrane_kierunki.indexOf(this.key1), 1)
-        wybrane_kierunki.splice(wybrane_kierunki.indexOf(this.key2), 1)
+        dane.wybrane_kierunki.splice(dane.wybrane_kierunki.indexOf(this.key1), 1)
+        dane.wybrane_kierunki.splice(dane.wybrane_kierunki.indexOf(this.key2), 1)
         document.getElementById("main").removeChild(this.menu_main)
-        players_kol[this.number - 1] = 0
+        dane.players_kol[this.number - 1] = 0
         game.del(this)
     }
 
