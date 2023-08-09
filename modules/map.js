@@ -87,7 +87,7 @@ export let game = {
         ctx.fillStyle = pat2
         ctx.beginPath()
         ctx.arc(this.hei / 2, this.hei / 2, this.hei / 2 - this.lwid / 2, (2 * Math.PI) / 360 * 270, (2 * Math.PI) / 360 * 90, true);
-        ctx.arc(this.wid - (this.hei / 2), this.hei / 2, this.hei - (this.hei / 2) - this.lwid / 2, (2 * Math.PI) / 360 * 270, (2 * Math.PI) / 360 * 450, true);
+        ctx.arc(this.wid - (this.hei / 2), this.hei / 2, this.hei - (this.hei / 2) - this.lwid / 2, (2 * Math.PI) / 360 * 90, (2 * Math.PI) / 360 * 270, true);
         ctx.closePath()
         ctx.stroke()
         ctx.fill()
